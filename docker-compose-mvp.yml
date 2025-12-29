@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hospital-backend:latest
+    container_name: hospital-backend
+    ports:
+      - "8080:8080"  # To access API locally
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_db:5432/hospital_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - postgres_db
+    restart: always
+
+  postgres_db:
+    image: postgres:15
+    container_name: hospital-postgres
+    ports:
+      - "5433:5432" # Exposed on 5433 host to avoid conflict
+    environment:
+      - POSTGRES_DB=hospital_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
